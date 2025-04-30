@@ -1,37 +1,33 @@
 import { TASKS } from "@langchain/langgraph-checkpoint";
 
 export interface SQL_STATEMENTS {
-  SELECT_SQL: string;
-  UPSERT_CHECKPOINT_BLOBS_SQL: string;
-  UPSERT_CHECKPOINTS_SQL: string;
-  UPSERT_CHECKPOINT_WRITES_SQL: string;
-  INSERT_CHECKPOINT_WRITES_SQL: string;
+	SELECT_SQL: string;
+	UPSERT_CHECKPOINT_BLOBS_SQL: string;
+	UPSERT_CHECKPOINTS_SQL: string;
+	UPSERT_CHECKPOINT_WRITES_SQL: string;
+	INSERT_CHECKPOINT_WRITES_SQL: string;
 }
 
 interface TABLES {
-  checkpoints: string;
-  checkpoint_blobs: string;
-  checkpoint_writes: string;
-  checkpoint_migrations: string;
+	threads: string;
+	checkpoints: string;
+	checkpoint_blobs: string;
+	checkpoint_writes: string;
+	checkpoint_migrations: string;
 }
 
 export const getTablesWithSchema = (schema: string): TABLES => {
-  const tables = [
-    "checkpoints",
-    "checkpoint_blobs",
-    "checkpoint_migrations",
-    "checkpoint_writes",
-  ];
-  return tables.reduce((acc, table) => {
-    acc[table as keyof TABLES] = `${schema}.${table}`;
-    return acc;
-  }, {} as TABLES);
+	const tables = ["threads", "checkpoints", "checkpoint_blobs", "checkpoint_migrations", "checkpoint_writes"];
+	return tables.reduce((acc, table) => {
+		acc[table as keyof TABLES] = `${schema}.${table}`;
+		return acc;
+	}, {} as TABLES);
 };
 
 export const getSQLStatements = (schema: string): SQL_STATEMENTS => {
-  const SCHEMA_TABLES = getTablesWithSchema(schema);
-  return {
-    SELECT_SQL: `select
+	const SCHEMA_TABLES = getTablesWithSchema(schema);
+	return {
+		SELECT_SQL: `select
     thread_id,
     checkpoint,
     checkpoint_ns,
@@ -65,12 +61,12 @@ export const getSQLStatements = (schema: string): SQL_STATEMENTS => {
     ) as pending_sends
   from ${SCHEMA_TABLES.checkpoints} cp `, // <-- the trailing space is necessary for combining with WHERE clauses
 
-    UPSERT_CHECKPOINT_BLOBS_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoint_blobs} (thread_id, checkpoint_ns, channel, version, type, blob)
+		UPSERT_CHECKPOINT_BLOBS_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoint_blobs} (thread_id, checkpoint_ns, channel, version, type, blob)
   VALUES ($1, $2, $3, $4, $5, $6)
   ON CONFLICT (thread_id, checkpoint_ns, channel, version) DO NOTHING
   `,
 
-    UPSERT_CHECKPOINTS_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoints} (thread_id, checkpoint_ns, checkpoint_id, parent_checkpoint_id, checkpoint, metadata)
+		UPSERT_CHECKPOINTS_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoints} (thread_id, checkpoint_ns, checkpoint_id, parent_checkpoint_id, checkpoint, metadata)
   VALUES ($1, $2, $3, $4, $5, $6)
   ON CONFLICT (thread_id, checkpoint_ns, checkpoint_id)
   DO UPDATE SET
@@ -78,7 +74,7 @@ export const getSQLStatements = (schema: string): SQL_STATEMENTS => {
     metadata = EXCLUDED.metadata;
   `,
 
-    UPSERT_CHECKPOINT_WRITES_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoint_writes} (thread_id, checkpoint_ns, checkpoint_id, task_id, idx, channel, type, blob)
+		UPSERT_CHECKPOINT_WRITES_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoint_writes} (thread_id, checkpoint_ns, checkpoint_id, task_id, idx, channel, type, blob)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   ON CONFLICT (thread_id, checkpoint_ns, checkpoint_id, task_id, idx) DO UPDATE SET
     channel = EXCLUDED.channel,
@@ -86,9 +82,9 @@ export const getSQLStatements = (schema: string): SQL_STATEMENTS => {
     blob = EXCLUDED.blob;
   `,
 
-    INSERT_CHECKPOINT_WRITES_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoint_writes} (thread_id, checkpoint_ns, checkpoint_id, task_id, idx, channel, type, blob)
+		INSERT_CHECKPOINT_WRITES_SQL: `INSERT INTO ${SCHEMA_TABLES.checkpoint_writes} (thread_id, checkpoint_ns, checkpoint_id, task_id, idx, channel, type, blob)
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   ON CONFLICT (thread_id, checkpoint_ns, checkpoint_id, task_id, idx) DO NOTHING
   `,
-  };
+	};
 };
