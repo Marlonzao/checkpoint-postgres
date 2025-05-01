@@ -6,6 +6,7 @@ export interface SQL_STATEMENTS {
 	UPSERT_CHECKPOINTS_SQL: string;
 	UPSERT_CHECKPOINT_WRITES_SQL: string;
 	INSERT_CHECKPOINT_WRITES_SQL: string;
+	UPSERT_THREADS_SQL: string;
 }
 
 interface TABLES {
@@ -86,5 +87,10 @@ export const getSQLStatements = (schema: string): SQL_STATEMENTS => {
   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
   ON CONFLICT (thread_id, checkpoint_ns, checkpoint_id, task_id, idx) DO NOTHING
   `,
+
+		UPSERT_THREADS_SQL: `INSERT INTO ${SCHEMA_TABLES.threads} (thread_id, valid_till)
+  VALUES ($1, NOW() + interval '6 hours')
+  ON CONFLICT (thread_id) DO UPDATE SET
+   valid_till = EXCLUDED.valid_till;`,
 	};
 };

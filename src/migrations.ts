@@ -59,5 +59,8 @@ export const getMigrations = (schema: string) => {
 
 		// Versão 5: Permitir blob nulo
 		`ALTER TABLE ${SCHEMA_TABLES.checkpoint_blobs} ALTER COLUMN blob DROP NOT NULL;`,
+
+		// Versão 6: Índice na coluna valid_till da tabela threads
+		`CREATE INDEX IF NOT EXISTS idx_${SCHEMA_TABLES.threads}_valid_till ON ${SCHEMA_TABLES.threads}(valid_till);`,
 	];
 };

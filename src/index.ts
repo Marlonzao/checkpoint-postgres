@@ -500,6 +500,9 @@ export class PostgresSaver extends BaseCheckpointSaver {
         checkpoint.channel_values,
         newVersions
       );
+      await client.query(this.SQL_STATEMENTS.UPSERT_THREADS_SQL, [
+        thread_id
+      ]);
       for (const serializedBlob of serializedBlobs) {
         await client.query(
           this.SQL_STATEMENTS.UPSERT_CHECKPOINT_BLOBS_SQL,
@@ -549,6 +552,9 @@ export class PostgresSaver extends BaseCheckpointSaver {
       writes
     );
     const client = await this.pool.connect();
+    await client.query(this.SQL_STATEMENTS.UPSERT_THREADS_SQL, [
+      config.configurable?.thread_id
+    ]);
     try {
       await client.query("BEGIN");
       for await (const dumpedWrite of dumpedWrites) {
