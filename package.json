@@ -1,7 +1,7 @@
 {
   "name": "@eusoumarlon/langgraph-checkpoint-postgres",
   "author": "Marlon de Oliveira dos Santos",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "LangGraph",
   "type": "module",
   "engines": {
