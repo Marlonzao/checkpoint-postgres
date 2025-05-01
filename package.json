@@ -1,5 +1,6 @@
 {
-  "name": "@langchain/langgraph-checkpoint-postgres",
+  "name": "@eusoumarlon/langgraph-checkpoint-postgres",
+  "author": "Marlon de Oliveira dos Santos",
   "version": "0.0.4",
   "description": "LangGraph",
   "type": "module",
@@ -10,7 +11,7 @@
   "types": "./index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git@github.com:langchain-ai/langgraphjs.git"
+    "url": "git@github.com:Marlonzao/checkpoint-postgres.git"
   },
   "scripts": {
     "build": "yarn build:internal",
@@ -28,7 +29,6 @@
     "format": "prettier --config .prettierrc --write \"src\"",
     "format:check": "prettier --config .prettierrc --check \"src\""
   },
-  "author": "LangChain",
   "license": "MIT",
   "dependencies": {
     "@langchain/core": "^0.3.50",
